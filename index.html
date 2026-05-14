@@ -1,0 +1,377 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Nga Nguyen — Graphic Designer & Visual Artist portfolio">
+<title>Nga Nguyễn · Graphic Designer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0e0e0e;--fg:#f0ece4;--accent:#e8ff47;--gray:#888;--font-display:'Bebas Neue',sans-serif;--font-body:'DM Sans',sans-serif}
+html{cursor:none;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);overflow:hidden}
+/* CURSOR */
+#cursor-dot{position:fixed;width:6px;height:6px;background:var(--accent);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .1s}
+#cursor-ring{position:fixed;width:32px;height:32px;border:1.5px solid var(--accent);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all .18s ease;opacity:.7}
+/* PROGRESS */
+#progress{position:fixed;right:0;top:0;width:3px;height:0%;background:var(--accent);z-index:1000;transition:height .4s ease}
+/* CONTAINER */
+#snap-container{height:100vh;overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none}
+#snap-container::-webkit-scrollbar{display:none}
+.slide{height:100vh;scroll-snap-align:start;scroll-snap-stop:always;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+/* HERO */
+#hero{background:var(--bg)}
+#grain{position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.08'/%3E%3C/svg%3E");background-size:200px;opacity:.4;pointer-events:none;z-index:1}
+.hero-inner{text-align:center;z-index:2;position:relative}
+.hero-name{font-family:var(--font-display);font-size:clamp(5rem,14vw,16rem);letter-spacing:.02em;line-height:1;color:var(--fg);opacity:0;animation:fadeUp .9s .2s forwards}
+.hero-sub{font-family:var(--font-body);font-size:clamp(1rem,2vw,1.4rem);letter-spacing:.25em;text-transform:uppercase;color:var(--accent);margin-top:1.2rem;height:2em;opacity:0;animation:fadeUp .9s .6s forwards}
+.hero-hint{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gray);z-index:2;animation:bounce 2s 1.5s infinite}
+.hero-hint span{display:block;width:1px;height:40px;background:var(--gray);margin:.6rem auto 0}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
+/* WORK SLIDES */
+.work-slide{background:#000}
+.work-slide img,.work-slide video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.work-overlay{position:absolute;bottom:0;left:0;right:0;padding:2rem 3rem;background:linear-gradient(transparent,rgba(0,0,0,.75));z-index:2;display:flex;justify-content:space-between;align-items:flex-end}
+.work-num{font-family:var(--font-display);font-size:4rem;line-height:1;color:var(--accent);opacity:.9}
+.work-caption{font-size:.8rem;letter-spacing:.15em;text-transform:uppercase;color:var(--fg);opacity:.7;text-align:right}
+/* DOTS NAV */
+#dot-nav{position:fixed;right:1.5rem;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:.5rem;z-index:100;opacity:0;transition:opacity .3s}
+#dot-nav.visible{opacity:1}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--gray);cursor:pointer;transition:all .3s;border:none;padding:0}
+.dot.active{background:var(--accent);transform:scale(1.5)}
+/* LIGHTBOX */
+#lightbox{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:5000;display:none;align-items:center;justify-content:center}
+#lightbox.open{display:flex}
+#lb-img{max-width:90vw;max-height:90vh;object-fit:contain;animation:fadeUp .3s}
+#lb-close{position:absolute;top:1.5rem;right:2rem;font-family:var(--font-display);font-size:3rem;color:var(--fg);cursor:pointer;line-height:1;transition:color .2s}
+#lb-close:hover{color:var(--accent)}
+#lb-prev,#lb-next{position:absolute;top:50%;transform:translateY(-50%);font-family:var(--font-display);font-size:3rem;color:var(--fg);cursor:pointer;padding:1rem;transition:color .2s;background:none;border:none;user-select:none}
+#lb-prev:hover,#lb-next:hover{color:var(--accent)}
+#lb-prev{left:1.5rem}
+#lb-next{right:1.5rem}
+/* ABOUT */
+#about{background:var(--bg)}
+.about-inner{display:grid;grid-template-columns:1fr 1fr;gap:5rem;max-width:1100px;width:90%;z-index:2}
+.about-photo{width:100%;aspect-ratio:3/4;object-fit:cover;filter:grayscale(20%)}
+.about-photo-placeholder{width:100%;aspect-ratio:3/4;background:#1a1a1a;border:1px solid #222;display:flex;align-items:center;justify-content:center;color:var(--gray);font-size:.8rem;letter-spacing:.1em}
+.about-content{}
+.about-label{font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--accent);margin-bottom:1.5rem}
+.about-name{font-family:var(--font-display);font-size:clamp(3rem,6vw,6rem);line-height:1;margin-bottom:2rem}
+.about-bio{font-size:.95rem;line-height:1.8;color:#aaa;margin-bottom:2rem;font-weight:300}
+.skills{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:2.5rem}
+.skill-tag{border:1px solid #333;padding:.35rem .8rem;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);transition:all .3s}
+.skill-tag:hover{border-color:var(--accent);color:var(--accent)}
+.social-links{display:flex;gap:1.5rem}
+.social-links a{font-size:.8rem;letter-spacing:.15em;text-transform:uppercase;color:var(--fg);text-decoration:none;position:relative;padding-bottom:2px}
+.social-links a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--accent);transition:width .3s}
+.social-links a:hover::after{width:100%}
+.social-links a:hover{color:var(--accent)}
+/* CONTACT */
+#contact{background:var(--bg)}
+.contact-inner{text-align:center;z-index:2;max-width:800px;width:90%}
+.contact-label{font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--accent);margin-bottom:2rem;display:block}
+.contact-heading{font-family:var(--font-display);font-size:clamp(3.5rem,10vw,10rem);line-height:1;margin-bottom:3rem}
+.contact-email{display:inline-block;font-family:var(--font-display);font-size:clamp(1.2rem,3vw,2.5rem);color:var(--fg);text-decoration:none;border-bottom:2px solid var(--accent);padding-bottom:.3rem;transition:all .3s;letter-spacing:.05em;cursor:pointer}
+.contact-email:hover{color:var(--accent)}
+.copy-notice{font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gray);margin-top:1rem;height:1.2em;transition:opacity .3s}
+.contact-socials{display:flex;gap:2rem;justify-content:center;margin-top:3rem}
+.contact-socials a{font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gray);text-decoration:none;transition:color .3s}
+.contact-socials a:hover{color:var(--accent)}
+.footer-note{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);font-size:.7rem;letter-spacing:.15em;color:#444;white-space:nowrap}
+@media(max-width:768px){.about-inner{grid-template-columns:1fr;gap:2rem}.about-photo,.about-photo-placeholder{aspect-ratio:1/1;max-height:40vh}.work-num{font-size:2.5rem}.hero-name{font-size:clamp(3.5rem,18vw,8rem)}}
+</style>
+</head>
+<body>
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+<div id="progress"></div>
+
+<div id="dot-nav"></div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" role="dialog" aria-label="Image viewer">
+  <button id="lb-close" aria-label="Close">&#215;</button>
+  <button id="lb-prev" aria-label="Previous">&#8592;</button>
+  <img id="lb-img" src="" alt="Portfolio work">
+  <button id="lb-next" aria-label="Next">&#8594;</button>
+</div>
+
+<!-- SNAP CONTAINER -->
+<div id="snap-container">
+
+  <!-- SECTION 1: HERO -->
+  <section class="slide" id="hero">
+    <div id="grain"></div>
+    <div class="hero-inner">
+      <h1 class="hero-name">Nga Nguyễn</h1>
+      <p class="hero-sub" id="typewriter"></p>
+    </div>
+    <div class="hero-hint">Scroll or &#8595; to explore<span></span></div>
+  </section>
+
+  <!-- SECTION 2-21: WORK SLIDES -->
+  <section class="slide work-slide" id="work-1" data-work="1">
+    <img src="assets/images/1.gif" alt="Work 1" loading="lazy">
+    <div class="work-overlay"><span class="work-num">01</span><span class="work-caption"><!-- REPLACE: Project 01 caption --><br>Visual Design</span></div>
+  </section>
+  <section class="slide work-slide" id="work-2" data-work="2">
+    <img src="assets/images/2.gif" alt="Work 2" loading="lazy">
+    <div class="work-overlay"><span class="work-num">02</span><span class="work-caption"><!-- REPLACE: Project 02 caption --><br>Visual Design</span></div>
+  </section>
+  <section class="slide work-slide" id="work-3" data-work="3">
+    <img src="assets/images/3.gif" alt="Work 3" loading="lazy">
+    <div class="work-overlay"><span class="work-num">03</span><span class="work-caption"><!-- REPLACE: Project 03 caption --><br>Motion</span></div>
+  </section>
+  <section class="slide work-slide" id="work-4" data-work="4">
+    <img src="assets/images/4.gif" alt="Work 4" loading="lazy">
+    <div class="work-overlay"><span class="work-num">04</span><span class="work-caption"><!-- REPLACE: Project 04 caption --><br>Motion</span></div>
+  </section>
+  <section class="slide work-slide" id="work-5" data-work="5">
+    <img src="assets/images/5.gif" alt="Work 5" loading="lazy">
+    <div class="work-overlay"><span class="work-num">05</span><span class="work-caption"><!-- REPLACE: Project 05 caption --><br>Graphic Design</span></div>
+  </section>
+  <section class="slide work-slide" id="work-6" data-work="6">
+    <img src="assets/images/6.png" alt="Work 6" loading="lazy">
+    <div class="work-overlay"><span class="work-num">06</span><span class="work-caption"><!-- REPLACE: Project 06 caption --><br>Editorial</span></div>
+  </section>
+  <section class="slide work-slide" id="work-7" data-work="7">
+    <img src="assets/images/7.png" alt="Work 7" loading="lazy">
+    <div class="work-overlay"><span class="work-num">07</span><span class="work-caption"><!-- REPLACE: Project 07 caption --><br>Branding</span></div>
+  </section>
+  <section class="slide work-slide" id="work-8" data-work="8">
+    <img src="assets/images/8.png" alt="Work 8" loading="lazy">
+    <div class="work-overlay"><span class="work-num">08</span><span class="work-caption"><!-- REPLACE: Project 08 caption --><br>Branding</span></div>
+  </section>
+  <section class="slide work-slide" id="work-9" data-work="9">
+    <img src="assets/images/9.png" alt="Work 9" loading="lazy">
+    <div class="work-overlay"><span class="work-num">09</span><span class="work-caption"><!-- REPLACE: Project 09 caption --><br>Visual Art</span></div>
+  </section>
+  <section class="slide work-slide" id="work-10" data-work="10">
+    <img src="assets/images/10.gif" alt="Work 10" loading="lazy">
+    <div class="work-overlay"><span class="work-num">10</span><span class="work-caption"><!-- REPLACE: Project 10 caption --><br>Motion</span></div>
+  </section>
+  <section class="slide work-slide" id="work-11" data-work="11">
+    <img src="assets/images/11.png" alt="Work 11" loading="lazy">
+    <div class="work-overlay"><span class="work-num">11</span><span class="work-caption"><!-- REPLACE: Project 11 caption --><br>Editorial</span></div>
+  </section>
+  <section class="slide work-slide" id="work-12" data-work="12">
+    <img src="assets/images/12.png" alt="Work 12" loading="lazy">
+    <div class="work-overlay"><span class="work-num">12</span><span class="work-caption"><!-- REPLACE: Project 12 caption --><br>Visual Design</span></div>
+  </section>
+  <section class="slide work-slide" id="work-13" data-work="13">
+    <img src="assets/images/13.gif" alt="Work 13" loading="lazy">
+    <div class="work-overlay"><span class="work-num">13</span><span class="work-caption"><!-- REPLACE: Project 13 caption --><br>Motion</span></div>
+  </section>
+  <section class="slide work-slide" id="work-14" data-work="14">
+    <img src="assets/images/14.png" alt="Work 14" loading="lazy">
+    <div class="work-overlay"><span class="work-num">14</span><span class="work-caption"><!-- REPLACE: Project 14 caption --><br>Branding</span></div>
+  </section>
+  <section class="slide work-slide" id="work-15" data-work="15">
+    <img src="assets/images/15.png" alt="Work 15" loading="lazy">
+    <div class="work-overlay"><span class="work-num">15</span><span class="work-caption"><!-- REPLACE: Project 15 caption --><br>Graphic Design</span></div>
+  </section>
+  <section class="slide work-slide" id="work-16" data-work="16">
+    <img src="assets/images/16.png" alt="Work 16" loading="lazy">
+    <div class="work-overlay"><span class="work-num">16</span><span class="work-caption"><!-- REPLACE: Project 16 caption --><br>Editorial</span></div>
+  </section>
+  <section class="slide work-slide" id="work-17" data-work="17">
+    <img src="assets/images/17.png" alt="Work 17" loading="lazy">
+    <div class="work-overlay"><span class="work-num">17</span><span class="work-caption"><!-- REPLACE: Project 17 caption --><br>Visual Art</span></div>
+  </section>
+  <section class="slide work-slide" id="work-18" data-work="18">
+    <img src="assets/images/18.gif" alt="Work 18" loading="lazy">
+    <div class="work-overlay"><span class="work-num">18</span><span class="work-caption"><!-- REPLACE: Project 18 caption --><br>Motion</span></div>
+  </section>
+  <section class="slide work-slide" id="work-19" data-work="19">
+    <img src="assets/images/19.png" alt="Work 19" loading="lazy">
+    <div class="work-overlay"><span class="work-num">19</span><span class="work-caption"><!-- REPLACE: Project 19 caption --><br>Branding</span></div>
+  </section>
+  <section class="slide work-slide" id="work-20" data-work="20">
+    <img src="assets/images/20.gif" alt="Work 20" loading="lazy">
+    <div class="work-overlay"><span class="work-num">20</span><span class="work-caption"><!-- REPLACE: Project 20 caption --><br>Motion</span></div>
+  </section>
+
+  <!-- SECTION 22: ABOUT -->
+  <section class="slide" id="about">
+    <div class="about-inner">
+      <div>
+        <!-- REPLACE: swap src with assets/images/about.jpg when you have your photo -->
+        <div class="about-photo-placeholder"><!-- REPLACE: your photo --><span>Photo</span></div>
+      </div>
+      <div class="about-content">
+        <p class="about-label">About</p>
+        <h2 class="about-name">Nga<br>Nguyễn</h2>
+        <!-- REPLACE: your bio text below -->
+        <p class="about-bio">Graphic designer and visual artist based in Vietnam. I craft bold, editorial identities and motion-rich experiences that live at the intersection of art and communication.</p>
+        <div class="skills">
+          <span class="skill-tag">Brand Identity</span>
+          <span class="skill-tag">Editorial Design</span>
+          <span class="skill-tag">Motion Graphics</span>
+          <span class="skill-tag">Art Direction</span>
+          <span class="skill-tag">Typography</span>
+          <span class="skill-tag">Visual Art</span>
+        </div>
+        <div class="social-links">
+          <a href="https://www.behance.net/thien_nga" target="_blank" rel="noopener">Behance</a>
+          <a href="#" target="_blank" rel="noopener"><!-- REPLACE: your Instagram -->Instagram</a>
+          <a href="#" target="_blank" rel="noopener"><!-- REPLACE: your LinkedIn -->LinkedIn</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 23: CONTACT -->
+  <section class="slide" id="contact">
+    <div class="contact-inner">
+      <span class="contact-label">Get in touch</span>
+      <h2 class="contact-heading">Let's<br>Talk</h2>
+      <!-- REPLACE: your email below -->
+      <a class="contact-email" id="email-btn" href="mailto:your@email.com" data-email="your@email.com">your@email.com</a>
+      <p class="copy-notice" id="copy-notice">&nbsp;</p>
+      <div class="contact-socials">
+        <a href="https://www.behance.net/thien_nga" target="_blank" rel="noopener">Behance</a>
+        <a href="#" target="_blank" rel="noopener"><!-- REPLACE: your Instagram -->Instagram</a>
+        <a href="#" target="_blank" rel="noopener"><!-- REPLACE: your LinkedIn -->LinkedIn</a>
+      </div>
+    </div>
+    <p class="footer-note">&#169; 2025 Nga Nguyễn &mdash; All rights reserved</p>
+  </section>
+
+</div><!-- /snap-container -->
+
+<script>
+(function(){
+'use strict';
+
+/* ------ CURSOR ------ */
+const dot = document.getElementById('cursor-dot');
+const ring = document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX; my=e.clientY;
+  dot.style.left=mx+'px'; dot.style.top=my+'px';
+});
+(function animRing(){
+  rx+=(mx-rx)*.15; ry+=(my-ry)*.15;
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(animRing);
+})();
+document.querySelectorAll('a,button,.work-slide').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ring.style.transform='translate(-50%,-50%) scale(1.8)';ring.style.background='rgba(232,255,71,.08)'});
+  el.addEventListener('mouseleave',()=>{ring.style.transform='translate(-50%,-50%) scale(1)';ring.style.background='none'});
+});
+
+/* ------ TYPEWRITER ------ */
+const tw = document.getElementById('typewriter');
+const phrases = ['Graphic Designer','Visual Artist','Brand Strategist'];
+let pi=0,ci=0,del=false;
+function type(){
+  const cur = phrases[pi];
+  tw.textContent = cur.slice(0,ci) + (del?'':'|');
+  if(!del){ ci++; if(ci>cur.length){del=true;setTimeout(type,1400);return;} }
+  else{ ci--; if(ci<0){del=false;pi=(pi+1)%phrases.length;setTimeout(type,400);return;} }
+  setTimeout(type, del?60:90);
+}
+type();
+
+/* ------ SNAP SCROLL + PROGRESS ------ */
+const container = document.getElementById('snap-container');
+const slides = Array.from(document.querySelectorAll('.slide'));
+const progress = document.getElementById('progress');
+const dotNav = document.getElementById('dot-nav');
+const TOTAL = slides.length;
+let current = 0;
+
+/* BUILD DOTS */
+slides.forEach((_,i)=>{
+  const b = document.createElement('button');
+  b.className='dot'; b.setAttribute('aria-label','Go to slide '+(i+1));
+  b.addEventListener('click',()=>goTo(i));
+  dotNav.appendChild(b);
+});
+const dots = dotNav.querySelectorAll('.dot');
+
+function goTo(i){
+  i = Math.max(0,Math.min(TOTAL-1,i));
+  slides[i].scrollIntoView({behavior:'smooth'});
+}
+
+function updateUI(idx){
+  current = idx;
+  dots.forEach((d,i)=>d.classList.toggle('active',i===idx));
+  progress.style.height=((idx/(TOTAL-1))*100)+'%';
+  dotNav.classList.toggle('visible', idx>0 && idx<TOTAL-1);
+}
+
+/* INTERSECTION OBSERVER */
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const idx = slides.indexOf(e.target);
+      updateUI(idx);
+    }
+  });
+},{root:container,threshold:.5});
+slides.forEach(s=>observer.observe(s));
+updateUI(0);
+
+/* KEYBOARD */
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowDown'||e.key===' '||e.key==='PageDown'){e.preventDefault();goTo(current+1);}
+  if(e.key==='ArrowUp'||e.key==='PageUp'){e.preventDefault();goTo(current-1);}
+});
+
+/* ------ LIGHTBOX ------ */
+const lb = document.getElementById('lightbox');
+const lbImg = document.getElementById('lb-img');
+let workSlides=[];
+let lbIdx=0;
+
+document.querySelectorAll('.work-slide').forEach((s,i)=>{
+  const img = s.querySelector('img');
+  workSlides.push(img.src);
+  s.addEventListener('click',()=>openLb(i));
+  s.style.cursor='zoom-in';
+});
+
+function openLb(i){
+  lbIdx=i;
+  lbImg.src=workSlides[i];
+  lb.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeLb(){
+  lb.classList.remove('open');
+  document.body.style.overflow='';
+}
+document.getElementById('lb-close').addEventListener('click',closeLb);
+document.getElementById('lb-prev').addEventListener('click',()=>{lbIdx=(lbIdx-1+workSlides.length)%workSlides.length;lbImg.src=workSlides[lbIdx];});
+document.getElementById('lb-next').addEventListener('click',()=>{lbIdx=(lbIdx+1)%workSlides.length;lbImg.src=workSlides[lbIdx];});
+lb.addEventListener('click',e=>{if(e.target===lb)closeLb();});
+document.addEventListener('keydown',e=>{
+  if(!lb.classList.contains('open'))return;
+  if(e.key==='Escape')closeLb();
+  if(e.key==='ArrowLeft'){lbIdx=(lbIdx-1+workSlides.length)%workSlides.length;lbImg.src=workSlides[lbIdx];}
+  if(e.key==='ArrowRight'){lbIdx=(lbIdx+1)%workSlides.length;lbImg.src=workSlides[lbIdx];}
+});
+
+/* ------ EMAIL COPY ------ */
+const emailBtn = document.getElementById('email-btn');
+const copyNotice = document.getElementById('copy-notice');
+emailBtn.addEventListener('click',e=>{
+  e.preventDefault();
+  const email = emailBtn.dataset.email;
+  navigator.clipboard.writeText(email).then(()=>{
+    copyNotice.textContent='Copied to clipboard!';
+    setTimeout(()=>{copyNotice.textContent='\u00a0';},2500);
+  });
+  window.location.href='mailto:'+email;
+});
+
+})();
+</script>
+</body>
+</html>
